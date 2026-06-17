@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopScript - Product Page Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app" id="app">
+    <section class="login-view" id="loginView">
+      <div class="login-panel">
+        <div>
+          <p class="eyebrow">ShopScript</p>
+          <h1>Generate product pages your store can ship today.</h1>
+          <p class="lead">Uses OpenAI's API to turn product notes into complete listing pages in seconds — with automatic fallback if the API is unavailable.</p>
+        </div>
+        <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+          <button class="auth-tab active" id="signinTab" type="button">Sign in</button>
+          <button class="auth-tab" id="signupTab" type="button">Create user</button>
+        </div>
+        <form class="login-form" id="loginForm">
+          <p class="auth-copy" id="authCopy">Sign in with an existing local merchant profile.</p>
+          <label>
+            Email
+            <input id="emailInput" type="email" autocomplete="email" placeholder="merchant@example.com" required>
+          </label>
+          <label>
+            Store name
+            <input id="storeInput" type="text" autocomplete="organization" placeholder="Northstar Goods">
+          </label>
+          <label>
+            Access code
+            <input id="accessCodeInput" type="password" autocomplete="current-password" placeholder="demo123" required>
+          </label>
+          <p class="form-message" id="authMessage"></p>
+          <button type="submit" id="authSubmit">Sign in</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="dashboard hidden" id="dashboardView">
+      <aside class="sidebar">
+        <div>
+          <p class="brand-mark">ShopScript</p>
+          <p class="store-name" id="storeName">Store</p>
+        </div>
+        <nav>
+          <a href="#generator" class="active">Generator</a>
+          <a href="#history">Saved pages</a>
+          <a href="tests.html">Tests</a>
+        </nav>
+        <button class="ghost-button" id="logoutButton" type="button">Log out</button>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Merchant studio</p>
+            <h2>AI-powered product page generator</h2>
+          </div>
+          <div class="status-pill" id="sessionStatus">Local safe mode</div>
+        </header>
+
+        <section class="grid" id="generator">
+          <form class="panel generator-panel" id="generatorForm">
+            <div class="panel-heading">
+              <h3>Product brief</h3>
+              <p>Paste what a merchant already knows. ShopScript turns it into a polished page.</p>
+            </div>
+            <label>
+              Product name
+              <input id="productName" type="text" placeholder="AeroBrew Travel Coffee Kit" required>
+            </label>
+            <label>
+              Short description
+              <textarea id="productDescription" rows="5" placeholder="A compact pour-over kit for commuters, campers, and office coffee fans." required></textarea>
+            </label>
+            <div class="two-col">
+              <label>
+                Price
+                <input id="productPrice" type="text" placeholder="Optional, e.g. $79 or Launch offer">
+              </label>
+              <label>
+                Audience
+                <input id="productAudience" type="text" placeholder="Optional, e.g. busy commuters">
+              </label>
+            </div>
+            <label>
+              Tone
+              <input id="productTone" type="text" placeholder="Optional, e.g. premium, playful, minimal, bold">
+            </label>
+            <button type="submit">Generate with OpenAI API</button>
+          </form>
+
+          <section class="panel run-panel">
+            <div class="panel-heading">
+              <h3>Generation run log</h3>
+              <p>Real-time steps as OpenAI generates your product page.</p>
+            </div>
+            <ol class="run-log" id="runLog">
+              <li class="idle">Waiting for product brief</li>
+            </ol>
+          </section>
+        </section>
+
+        <section class="panel integration-panel">
+          <div class="panel-heading inline-heading">
+            <div>
+              <h3>How it works</h3>
+              <p>ShopScript calls OpenAI's API in real time. If the API is unavailable, it automatically falls back to local generation so the demo keeps working.</p>
+            </div>
+            <div class="mode-badge" id="integrationModeBadge">Live API active</div>
+          </div>
+          <div class="mode-grid">
+            <div class="mode-card active">
+              <strong>🟢 Live API Mode</strong>
+              <p>OpenAI generates your product page in real time with custom benefits, FAQs, and SEO metadata based on your brief.</p>
+            </div>
+            <div class="mode-card">
+              <strong>🟡 Fallback Mode</strong>
+              <p>If the API is slow or unavailable, a local generator creates a valid page so the demo keeps working.</p>
+            </div>
+            <div class="mode-card">
+              <strong>Production Ready</strong>
+              <p>The same API boundary scales to real authentication, databases, image generation, and approval workflows.</p>
+            </div>
+          </div>
+          <pre class="request-shape" aria-label="API request and response">// What you send:
+POST /api/generate {
+  name: "Product name",
+  description: "What it is",
+  price: "$X",
+  audience: "Who it's for",
+  tone: "Style (e.g., premium)"
+}
+
+// What you get back:
+{
+  headline: "AI-generated headline",
+  benefits: ["...", "...", "..."],
+  faqs: [{question, answer}, ...],
+  seo: {title, description},
+  visualSvg: "<svg>...</svg>"
+}</pre>
+          <p class="integration-note"><strong>Note:</strong> The API key is kept on the server (not in browser) for security. In production, add real auth, database persistence, rate limiting, and observability.</p>
+        </section>
+
+        <section class="preview-layout">
+          <section class="panel preview-panel">
+            <div class="panel-heading inline-heading">
+              <div>
+                <h3>Live preview</h3>
+                <p id="previewSubtitle">Generated page appears here.</p>
+              </div>
+              <div class="actions">
+                <button class="secondary-button" id="saveButton" type="button" disabled>Save</button>
+                <button id="downloadButton" type="button" disabled>Download HTML</button>
+              </div>
+            </div>
+            <article class="product-preview empty" id="productPreview">
+              <p>Generate a product page to preview the storefront output.</p>
+            </article>
+          </section>
+
+          <section class="panel history-panel" id="history">
+            <div class="panel-heading">
+              <h3>Saved pages</h3>
+              <p>Persisted locally for this merchant session.</p>
+            </div>
+            <div class="history-list" id="historyList"></div>
+          </section>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="codexClient.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
